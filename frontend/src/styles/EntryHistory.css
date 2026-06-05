@@ -1,0 +1,116 @@
+.history-container {
+  width: 100%;
+}
+
+.history-container h2 {
+  font-size: 1.8rem;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+.entries-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.entry-card {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s;
+  border-left: 4px solid #667eea;
+}
+
+.entry-card:hover {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.entry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+}
+
+.entry-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.entry-date {
+  font-size: 0.85rem;
+  color: #999;
+}
+
+.entry-mood {
+  font-size: 1.5rem;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.3s;
+}
+
+.delete-btn:hover {
+  opacity: 1;
+}
+
+.entry-text {
+  color: #555;
+  line-height: 1.6;
+  margin: 15px 0;
+  font-size: 0.95rem;
+}
+
+.entry-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.stress-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(102, 126, 234, 0.1);
+  padding: 8px 15px;
+  border-radius: 20px;
+}
+
+.stress-label {
+  color: #667eea;
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+
+.stress-confidence {
+  color: #667eea;
+  font-weight: bold;
+}
+
+.tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  background: #f0f0f0;
+  color: #666;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.8rem;
+}
