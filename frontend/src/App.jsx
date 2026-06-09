@@ -6,7 +6,8 @@ import Dashboard from './components/Dashboard';
 import EntryHistory from './components/EntryHistory';
 import Suggestions from './components/Suggestions';
 import './App.css';
-
+import { VITE_API_URL } from './config';
+const API_URL = VITE_API_URL;
 function App() {
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -45,7 +46,7 @@ function App() {
       const token = localStorage.getItem('temp-token');
       
       // Send to backend
-      const response = await fetch('http://localhost:8000/api/auth/google', {
+      const response = await fetch(`${API_URL}/api/auth/google`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -98,11 +99,10 @@ function App() {
           <div className="login-features">
             <h3>Features:</h3>
             <ul>
+
               <li>✨ AI-powered stress detection</li>
-              <li>📊 Mood trends visualization</li>
               <li>💡 Personalized wellness suggestions</li>
               <li>📝 Secure journal entries</li>
-              <li>🔒 Your data is private and encrypted</li>
             </ul>
           </div>
         </div>
