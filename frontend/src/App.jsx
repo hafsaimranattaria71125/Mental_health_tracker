@@ -6,8 +6,7 @@ import Dashboard from './components/Dashboard';
 import EntryHistory from './components/EntryHistory';
 import Suggestions from './components/Suggestions';
 import './App.css';
-import { VITE_API_URL } from './config';
-const API_URL = VITE_API_URL;
+const API_URL =import.meta.env.VITE_API_URL;
 function App() {
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState('dashboard');
