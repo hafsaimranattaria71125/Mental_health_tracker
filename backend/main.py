@@ -78,9 +78,14 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
+trusted_hosts = [
+    "localhost",
+    "127.0.0.1",
+    "hafsaimranattaria7115-mental-health-tracker-backend.hf.space",
+    "https://mental-health-tracker-teal.vercel.app/",  # CHANGE THIS TO YOUR VERCEL DOMAIN
+]
 # Trusted Host
-app.add_middleware(TrustedHostMiddleware, allowed_hosts=["localhost", "127.0.0.1"])
+app.add_middleware(TrustedHostMiddleware, allowed_hosts=trusted_hosts)
 #app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
 # ============================================================================
 # PYDANTIC MODELS
