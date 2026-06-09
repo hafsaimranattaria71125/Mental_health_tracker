@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/Suggestions.css';
-import { VITE_API_URL } from '../config';
-const API_URL = VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL;
 function Suggestions({ user }) {
   const [suggestion, setSuggestion] = useState(null);
   const [history, setHistory] = useState([]);

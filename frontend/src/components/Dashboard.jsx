@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/Dashboard.css';
-import { VITE_API_URL } from '../config';
-API_URL = VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL;
 
 function Dashboard({ user }) {
   const [stats, setStats] = useState(null);

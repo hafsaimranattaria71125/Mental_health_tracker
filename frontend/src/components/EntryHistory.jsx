@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/EntryHistory.css';
-import { VITE_API_URL } from '../config';
-API_URL = VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL;
 
 function EntryHistory({ user }) {
   const [entries, setEntries] = useState([]);
