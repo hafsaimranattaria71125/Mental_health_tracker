@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/EntryHistory.css';
+import { VITE_API_URL } from '../config';
+API_URL = VITE_API_URL;
 
 function EntryHistory({ user }) {
   const [entries, setEntries] = useState([]);
@@ -12,7 +14,7 @@ function EntryHistory({ user }) {
   const fetchEntries = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8000/api/journal/entries?user_id=${user.user_id}&limit=50`
+        `${API_URL}/api/journal/entries?user_id=${user.user_id}&limit=50`
       );
       const data = await response.json();
       setEntries(data);
@@ -27,7 +29,7 @@ function EntryHistory({ user }) {
     if (!window.confirm('Are you sure you want to delete this entry?')) return;
 
     try {
-      await fetch(`http://localhost:8000/api/journal/entry/${entryId}?user_id=${user.user_id}`, {
+      await fetch(`${API_URL}/api/journal/entry/${entryId}?user_id=${user.user_id}`, {
         method: 'DELETE'
       });
 

@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import '../styles/JournalEntryForm.css';
+import { VITE_API_URL } from '../config';
+
+const API_URL = VITE_API_URL;
 
 function JournalEntryForm({ user, onSuccess }) {
   const [text, setText] = useState('');
@@ -21,7 +24,7 @@ function JournalEntryForm({ user, onSuccess }) {
     try {
       setLoading(true);
 
-      const response = await fetch(`http://localhost:8000/api/journal/predict?user_id=${user.user_id}`, {
+      const response = await fetch(`${API_URL}/api/journal/predict?user_id=${user.user_id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

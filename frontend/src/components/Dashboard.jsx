@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/Dashboard.css';
+import { VITE_API_URL } from '../config';
+API_URL = VITE_API_URL;
 
 function Dashboard({ user }) {
   const [stats, setStats] = useState(null);
@@ -16,14 +18,14 @@ function Dashboard({ user }) {
     try {
       // Fetch stats
       const statsResponse = await fetch(
-        `http://localhost:8000/api/stats/dashboard?user_id=${user.user_id}`
+        `${API_URL}/api/stats/dashboard?user_id=${user.user_id}`
       );
       const statsData = await statsResponse.json();
       setStats(statsData);
 
       // Fetch trends
       const trendsResponse = await fetch(
-        `http://localhost:8000/api/stats/mood-trends?user_id=${user.user_id}&days=30`
+        `${API_URL}/api/stats/mood-trends?user_id=${user.user_id}&days=30`
       );
       const trendsData = await trendsResponse.json();
       setTrends(trendsData);

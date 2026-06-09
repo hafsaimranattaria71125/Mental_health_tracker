@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/Suggestions.css';
-
+import { VITE_API_URL } from '../config';
+const API_URL = VITE_API_URL;
 function Suggestions({ user }) {
   const [suggestion, setSuggestion] = useState(null);
   const [history, setHistory] = useState([]);
@@ -14,14 +15,14 @@ function Suggestions({ user }) {
     try {
       // Get latest
       const latestResponse = await fetch(
-        `http://localhost:8000/api/suggestions/weekly?user_id=${user.user_id}`
+        `${API_URL}/api/suggestions/weekly?user_id=${user.user_id}`
       );
       const latestData = await latestResponse.json();
       setSuggestion(latestData.suggestions ? latestData : null);
 
       // Get history
       const historyResponse = await fetch(
-        `http://localhost:8000/api/suggestions/history?user_id=${user.user_id}&limit=10`
+        `${API_URL}/api/suggestions/history?user_id=${user.user_id}&limit=10`
       );
       const historyData = await historyResponse.json();
       setHistory(historyData);
