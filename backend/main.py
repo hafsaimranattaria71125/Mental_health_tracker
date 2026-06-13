@@ -41,11 +41,14 @@ GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 # Validate all env vars
-required_vars = ["SUPABASE_URL", "SUPABASE_KEY", "HF_API_TOKEN", "GOOGLE_CLIENT_ID", "GROQ_API_KEY"]
+required_vars = ["SUPABASE_URL", "SUPABASE_KEY", "GOOGLE_CLIENT_ID"]
 for var in required_vars:
     if not os.getenv(var):
         raise ValueError(f"Missing environment variable: {var}")
-
+optional_vars = ["HF_API_TOKEN", "GROQ_API_KEY"]
+for var in optional_vars:
+    if not os.getenv(var):
+        print(f"WARNING: Optional environment variable not set: {var}")
 # ============================================================================
 # INITIALIZE CLIENTS
 # ============================================================================
@@ -383,7 +386,35 @@ async def google_auth(auth_request: GoogleAuthRequest):
 # ============================================================================
 # ROUTES - JOURNAL ENTRIES
 # ============================================================================
+@app.post("/api/journal/simple")
+async def save_simple_journal_entry(entry: JournalEntryRequest, user_id: str):
+     """Save a journal entry WITHOUT AI stress analysis (Simple Mode)."""
+    try:
+        user_check = supabase_client.table("users").select("id").eq("id", user_id).execute()
+        if not user_check.data:
+            raise HTTPException(status_code=401, detail="User not found")
+ 
+ 
+        entry_id = str(uuid.uuid4())
+        journal_record = {
+            "id": entry_id,
+            "user_id": user_id,
+            "text": entry.text,
+            "stress_category": None,
+            "stress_confidence": None,
+            "mood_emoji": entry.mood_emoji,
+            "tags": entry.tags,
+            "created_at": datetime.now().isoformat(),
+        }
 
+        supabase_client.table("journal_entries").insert(journal_record).execute()
+        return {
+             "entry_id": entry_id,
+             "timestamp": datetime.now().isoformat(),
+             "message": "Entry saved (no AI analysis)"
+         }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 @app.post("/api/journal/predict", response_model=PredictionResponse)
 async def predict_journal_entry(entry: JournalEntryRequest, user_id: str):
     """Predict stress from journal entry"""
