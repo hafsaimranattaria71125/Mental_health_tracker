@@ -114,7 +114,7 @@ function App() {
       <div className="login-bg">
         <div className="login-card">
           <div className="login-logo">🧠</div>
-          <h1>MindJournal</h1>
+          <h1>Mental Health Tracker</h1>
           <p className="login-tagline">Your private space to reflect, understand, and grow</p>
 
           <div className="login-modes">
