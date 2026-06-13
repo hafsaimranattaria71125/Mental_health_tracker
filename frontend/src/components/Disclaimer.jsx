@@ -1,83 +1,67 @@
-
 import React, { useState } from 'react';
 import '../styles/Disclaimer.css';
 
-function Disclaimer({ onAccept }) {
+function Disclaimer({ onAccept, onCancel, loading }) {
   const [accepted, setAccepted] = useState(false);
-
-  const handleAccept = () => {
-    localStorage.setItem('disclaimer-accepted', 'true');
-    onAccept();
-  };
 
   return (
     <div className="disclaimer-overlay">
       <div className="disclaimer-modal">
         <div className="disclaimer-header">
-          🤖 AI Model Disclosure
+          <span>🤖 AI Model Disclosure</span>
+          <button className="disclaimer-close" onClick={onCancel} title="Cancel">✕</button>
         </div>
-        
+
         <div className="disclaimer-content">
-          <h2>Important Information</h2>
-          
+          <h2>Before you continue</h2>
+
           <div className="disclaimer-section">
             <h3>📊 How AI is Used</h3>
             <p>
-              This application uses an AI model called <strong>MentalRoBERTa</strong> to analyze your journal entries 
-              and detect stress levels. The model is trained to recognize patterns in mental health-related text.
+              This app uses <strong>MentalRoBERTa</strong> (via HuggingFace) to analyze your journal
+              entries for stress patterns, and <strong>Llama 3.1 70B</strong> (via Groq) to generate
+              personalized wellness suggestions.
             </p>
           </div>
 
           <div className="disclaimer-section">
-            <h3>🔍 What the AI Does</h3>
+            <h3>🔍 What it detects</h3>
             <ul>
-              <li>✅ Analyzes journal text for stress indicators</li>
-              <li>✅ Categorizes stress into 6 types:
-                <ul>
-                  <li>Normal/No Stress</li>
-                  <li>Interpersonal/Social Stress</li>
-                  <li>Financial Strain</li>
-                  <li>Abuse/Trauma</li>
-                  <li>Anxiety/Panic</li>
-                  <li>PTSD/Flashbacks</li>
-                </ul>
-              </li>
-              <li>✅ Generates wellness suggestions using GROQ Llama-3.1-70B</li>
+              <li>Normal / No Stress</li>
+              <li>Interpersonal / Social Stress</li>
+              <li>Financial Strain</li>
+              <li>Abuse / Trauma</li>
+              <li>Anxiety / Panic</li>
+              <li>PTSD / Flashbacks</li>
             </ul>
           </div>
 
-          <div className="disclaimer-section">
+          <div className="disclaimer-section warn-section">
             <h3>⚠️ Important Disclaimers</h3>
             <ul>
-              <li>❌ This is NOT a replacement for professional mental health treatment</li>
-              <li>❌ AI predictions may not be 100% accurate</li>
-              <li>❌ If you're in crisis, please contact emergency services or a mental health professional</li>
-              <li>✅ Use these insights as a tool for self-reflection</li>
-              <li>✅ Share results with your healthcare provider if needed</li>
+              <li>This is <strong>not</strong> a replacement for professional mental health care</li>
+              <li>AI predictions are not 100% accurate</li>
+              <li>In crisis? Contact emergency services or a mental health professional immediately</li>
             </ul>
           </div>
 
           <div className="disclaimer-section">
-            <h3>🔒 Data Privacy</h3>
+            <h3>🔒 Your Privacy</h3>
             <ul>
-              <li>All your entries are private and encrypted</li>
-              <li>Only you can see your data</li>
+              <li>All entries are private — only you can see them</li>
               <li>Data is stored securely on Supabase</li>
-              <li>You can delete entries anytime</li>
+              <li>You can delete any entry at any time</li>
             </ul>
           </div>
 
-          <div className="disclaimer-section">
-            <h3>📞 Need Help?</h3>
-            <p>
-              If you're experiencing a mental health crisis:
-            </p>
-            <ul>
-              <li><strong>US:</strong> National Suicide Prevention Lifeline: 988</li>
-              <li><strong>UK:</strong> Samaritans: 116 123</li>
-              <li><strong>Pakistan:</strong> AASRA: 9820466726</li>
-              <li><strong>International:</strong> findahelpline.com</li>
-            </ul>
+          <div className="disclaimer-section crisis-section">
+            <h3>📞 Crisis Resources</h3>
+            <div className="crisis-grid">
+              <span><strong>Pakistan</strong> Umang: 0317-4288665</span>
+              <span><strong>US</strong> 988 Suicide & Crisis Lifeline</span>
+              <span><strong>UK</strong> Samaritans: 116 123</span>
+              <span><strong>Global</strong> findahelpline.com</span>
+            </div>
           </div>
         </div>
 
@@ -88,15 +72,20 @@ function Disclaimer({ onAccept }) {
               checked={accepted}
               onChange={(e) => setAccepted(e.target.checked)}
             />
-            I understand and accept the terms
+            <span>I understand and accept the terms above</span>
           </label>
-          <button
-            className="accept-btn"
-            disabled={!accepted}
-            onClick={handleAccept}
-          >
-            Continue to App
-          </button>
+          <div className="disclaimer-btns">
+            <button className="cancel-btn" onClick={onCancel}>
+              Cancel
+            </button>
+            <button
+              className="accept-btn"
+              disabled={!accepted || loading}
+              onClick={onAccept}
+            >
+              {loading ? 'Signing in…' : 'Continue to App →'}
+            </button>
+          </div>
         </div>
       </div>
     </div>
