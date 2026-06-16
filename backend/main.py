@@ -41,14 +41,11 @@ GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 # Validate all env vars
-required_vars = ["SUPABASE_URL", "SUPABASE_KEY", "GOOGLE_CLIENT_ID"]
+required_vars = ["SUPABASE_URL", "SUPABASE_KEY", "HF_API_TOKEN", "GOOGLE_CLIENT_ID", "GROQ_API_KEY"]
 for var in required_vars:
     if not os.getenv(var):
         raise ValueError(f"Missing environment variable: {var}")
-optional_vars = ["HF_API_TOKEN", "GROQ_API_KEY"]
-for var in optional_vars:
-    if not os.getenv(var):
-        print(f"WARNING: Optional environment variable not set: {var}")
+
 # ============================================================================
 # INITIALIZE CLIENTS
 # ============================================================================
@@ -75,7 +72,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",
         "http://localhost:5173",
-        "https://mental-health-tracker-teal.vercel.app/"  # Update with your Vercel domain
+        "https://mental-health-tracker-teal.vercel.app"  # no trailing slash
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -85,7 +82,7 @@ trusted_hosts = [
     "localhost",
     "127.0.0.1",
     "hafsaimranattaria7115-mental-health-tracker-backend.hf.space",
-    "https://mental-health-tracker-teal.vercel.app/",  # CHANGE THIS TO YOUR VERCEL DOMAIN
+    "mental-health-tracker-teal.vercel.app",
 ]
 # Trusted Host
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=trusted_hosts)
@@ -135,6 +132,19 @@ class PredictionResponse(BaseModel):
     all_predictions: dict
     entry_id: str
     timestamp: str
+
+class AnalyzeOnlyRequest(BaseModel):
+    text: str
+
+class AnalyzeOnlyResponse(BaseModel):
+    stress_category: str
+    stress_confidence: float
+    all_predictions: dict
+
+class SimpleEntryRequest(BaseModel):
+    text: str
+    mood_emoji: Optional[str] = None
+    tags: Optional[List[str]] = None
 
 # ============================================================================
 # AUTHENTICATION FUNCTIONS
@@ -386,17 +396,29 @@ async def google_auth(auth_request: GoogleAuthRequest):
 # ============================================================================
 # ROUTES - JOURNAL ENTRIES
 # ============================================================================
+
+@app.post("/api/journal/analyze", response_model=AnalyzeOnlyResponse)
+async def analyze_only(request: AnalyzeOnlyRequest):
+    """Guest endpoint: analyze text for stress WITHOUT saving to DB."""
+    if not request.text or len(request.text.strip()) < 10:
+        raise HTTPException(status_code=400, detail="Text must be at least 10 characters.")
+    prediction = await predict_stress(request.text)
+    return AnalyzeOnlyResponse(
+        stress_category=prediction["stress_category"],
+        stress_confidence=prediction["stress_confidence"],
+        all_predictions=prediction["all_predictions"]
+    )
+
 @app.post("/api/journal/simple")
-async def save_simple_journal_entry(entry: JournalEntryRequest, user_id: str):
-     """Save a journal entry WITHOUT AI stress analysis (Simple Mode)."""
+async def save_simple_entry(entry: SimpleEntryRequest, user_id: str):
+    """Save a journal entry without AI analysis (Simple Journal Mode)."""
     try:
-        user_check = supabase_client.table("users").select("id").eq("id", user_id).execute()
+        user_check = supabase_client.table("users").select("*").eq("id", user_id).execute()
         if not user_check.data:
             raise HTTPException(status_code=401, detail="User not found")
- 
- 
+
         entry_id = str(uuid.uuid4())
-        journal_record = {
+        supabase_client.table("journal_entries").insert({
             "id": entry_id,
             "user_id": user_id,
             "text": entry.text,
@@ -404,17 +426,15 @@ async def save_simple_journal_entry(entry: JournalEntryRequest, user_id: str):
             "stress_confidence": None,
             "mood_emoji": entry.mood_emoji,
             "tags": entry.tags,
-            "created_at": datetime.now().isoformat(),
-        }
+            "created_at": datetime.now().isoformat()
+        }).execute()
 
-        supabase_client.table("journal_entries").insert(journal_record).execute()
-        return {
-             "entry_id": entry_id,
-             "timestamp": datetime.now().isoformat(),
-             "message": "Entry saved (no AI analysis)"
-         }
+        return {"entry_id": entry_id, "message": "Entry saved"}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 @app.post("/api/journal/predict", response_model=PredictionResponse)
 async def predict_journal_entry(entry: JournalEntryRequest, user_id: str):
     """Predict stress from journal entry"""
